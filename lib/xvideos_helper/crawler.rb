@@ -1,105 +1,95 @@
 # coding: utf-8
-require 'open-uri'
-require "nokogiri"
+require "mechanize"
 
 module XvideosHelper
   class Crawler
     attr_accessor :movies_limit,:tags_limit
     def initialize
-      @domain ||= ENV::XVIDES_URL_JP
-      @iframe_url ||= ENV::XVIDES_IFRAME_URL
       @movies_limit ||= -1
       @tags_limit ||= -1
+
+      @agent = Mechanize.new
     end
 
     def get_data_from(url,from)
-      begin
-        source = html(url)
-        if from == 'movie'
-          return parsed_movie_data(source)
-        elsif from == 'taglist'
-          return parsed_tag_data(source)
-        else
-          return {}
-        end
-      rescue Exception => e
-        raise e
+      @agent.get(url)
+      case from
+      when "movie"   then parsed_movie_data
+      when "taglist" then parsed_tag_data
+      else
+        {}
       end
+    rescue Exception => e
+      raise e
     end
 
-private
-    def html(url)
-      begin
-        return Nokogiri.HTML(open(url).read)
-      rescue Exception => e
-        raise e
-      end
-    end
+    private
 
     # main crawler
-    def parsed_movie_data(data)
-      parsed_data = {}
-      index       = 0
+    def parsed_movie_data
+      parsed_data = initialized_hash
+      @agent.page.search('//div[@class="thumbBlock"]/div[@class="thumbInside"]').each_with_index do |post, index|
+        movie_page_url, movie_thumnail_url, description = nil
+        duration, movie_quality = nil
+        # limit
+        break if @movies_limit == index
 
-      data.xpath('//div[@class="thumbBlock"]/div[@class="thumbInside"]').each do |post|
-        begin
-          # limit
-          break if @movies_limit == index
-          parsed_data[index] = {}
-          # thumbnail infomation
-          post.search('div[@class="thumb"]/a').each do |a|
-            parsed_data[index]['movie_page_url'] = "#{@domain}#{a.attribute('href').value}"
-            parsed_data[index]['movie_thumnail_url'] = "#{a.children.attribute('src').value}"
-          end
-
-          # if script tag is contained
-          post.search('script').each do |elm|
-            parsed_data[index]['movie_page_url'] = @domain + (elm.children[0].content.match(/href="(.+?)">/))[1]
-            parsed_data[index]['movie_thumnail_url'] = (elm.children[0].content.match(/src="(.+?)"/))[1]
-            parsed_data[index]['description'] = (elm.children[0].content.match(/<p><a href=".+">(.+)<\/a><\/p>/))[1]
-          end
-
-          # iframe url
-          parsed_data[index]['movie_url'] = @iframe_url + (parsed_data[index]['movie_page_url'].match(/\/video(\d+)\/.*/))[1]
-
-          # description
-          post.search('p/a').each do |a|
-            parsed_data[index]['description'] = a.inner_text
-          end
-
-          # metadata
-          post.search('p[@class="metadata"]/span[@class="bg"]').each do |span|
-            text = span.inner_text.gsub(/(\t|\s|\n)+/,'')
-            parsed_data[index]['duration'] = (text.match(/\(.+\)/))[0]
-            parsed_data[index]['movie_quality'] = text.sub(/\(.+\)/,'')
-          end
-          index += 1
-        rescue Exception => e
-          raise e
+        # thumbnail infomation
+        post.search('div[@class="thumb"]/a').each do |a|
+          movie_page_url     = URI.join(ENV::DOMAIN, a[:href]).to_s
+          movie_thumnail_url = a.at("img")[:src]
         end
+
+        # if script tag is contained
+        post.search('script').each do |elm|
+          href = elm.children[0].content.match(/href="(.+?)">/)[1]
+          movie_page_url     = URI.join(ENV::DOMAIN, href).to_s
+          movie_thumnail_url = elm.children[0].content.match(/src="(.+?)"/)[1]
+          description        = elm.children[0].content.match(/<p><a href=".+">(.+)<\/a><\/p>/)[1]
+        end
+
+        # iframe url
+        iframe = movie_page_url.match(/\/video(\d+)\/.*/)[1]
+        movie_url = URI.join(ENV::IFRAME_URL, iframe).to_s
+
+        # description
+        post.search('p/a').each do |a|
+          description = a.inner_text
+        end
+
+        # metadata
+        post.search('p[@class="metadata"]/span[@class="bg"]').each do |span|
+          text = span.inner_text.gsub(/(\t|\s|\n)+/,'')
+          duration = text.match(/\(.+\)/)[0]
+          movie_quality = text.sub(/\(.+\)/,'')
+        end
+        parsed_data[index] = {"movie_page_url" => movie_page_url, "movie_thumnail_url" => movie_thumnail_url,
+          "description" => description, "movie_url" => movie_url, "duration" => duration, "movie_quality" => movie_quality }
       end
-      return parsed_data
+      parsed_data
+    rescue Exception => e
+      raise e
     end
 
     # tag list crawler
-    def parsed_tag_data(data)
-        parsed_data = {}
-        index       = 0
-        data.xpath('//div[@id="main"]/ul[@id="tags"]/li').each do |li|
-          begin
-            # limit
-            break if @tags_limit == index
-            parsed_data[index] = {}
-            # tag info
-            parsed_data[index]['tag_name'] = li.children.children.inner_text
-            parsed_data[index]['tag_url'] = "#{@domain}#{li.children.attribute('href').value}"
-            parsed_data[index]['tag_count'] = li.inner_text.sub(/.+\s/,'')
-            index += 1
-          rescue Exception => e
-            raise e
-          end
-        end
-        return parsed_data
+    def parsed_tag_data
+      parsed_data = initialized_hash
+      @agent.page.search('//div[@id="main"]/ul[@id="tags"]/li').each_with_index do |li, index|
+        # limit
+        break if @tags_limit == index
+        # tag info
+        tag_name = li.children.children.inner_text
+        tag_url = URI.join(ENV::DOMAIN, li.at("a")[:href]).to_s
+        tag_count = li.inner_text.sub(/.+\s/,'')
+        parsed_data[index] = {"tag_name" => tag_name, "tag_url" => tag_url, "tag_count" => tag_count}
+      end
+      parsed_data
+    rescue Exception => e
+      raise e
+    end
+
+    def initialized_hash
+      Hash.new{ |hash, key| hash[key] = {} }
     end
   end
 end
