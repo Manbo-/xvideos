@@ -6,8 +6,8 @@ module XvideosHelper
   class Crawler
     attr_accessor :movies_limit,:tags_limit
     def initialize
-      @domain ||= Env::XVIDES_URL_JP
-      @iframe_url ||= Env::XVIDES_IFRAME_URL
+      @domain ||= ENV::XVIDES_URL_JP
+      @iframe_url ||= ENV::XVIDES_IFRAME_URL
       @movies_limit ||= -1
       @tags_limit ||= -1
     end

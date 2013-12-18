@@ -7,8 +7,8 @@ module XvideosHelper
     attr_accessor :domain, :tag_url
     def initialize
       @crawler = XvideosHelper::Crawler.new
-      @domain ||= Env::XVIDES_URL_JP
-      @tag_url ||= Env::XVIDES_TAG_URL
+      @domain ||= ENV::XVIDES_URL_JP
+      @tag_url ||= ENV::XVIDES_TAG_URL
     end
 
     # get movie information according to target
