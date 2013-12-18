@@ -3,36 +3,31 @@ require "mechanize"
 
 module XvideosHelper
   class Crawler
-    attr_accessor :movies_limit,:tags_limit
     def initialize
-      @movies_limit ||= -1
-      @tags_limit ||= -1
-
       @agent = Mechanize.new
+      @movies, @tags = [], []
     end
 
-    def get_data_from(url,from)
+    attr_reader :movies, :tags
+    alias videos movies
+
+    def get_movies(url = ENV::DOMAIN)
       @agent.get(url)
-      case from
-      when "movie"   then parsed_movie_data
-      when "taglist" then parsed_tag_data
-      else
-        {}
-      end
-    rescue Exception => e
-      raise e
+      @movies = scrape_movie_data
+    end
+    alias get_videos get_movies
+
+    def get_tags
+      @agent.get(ENV::TAG_URL)
+      @tags = scrape_tag_data
     end
 
     private
 
-    # main crawler
-    def parsed_movie_data
-      parsed_data = initialized_hash
-      @agent.page.search('//div[@class="thumbBlock"]/div[@class="thumbInside"]').each_with_index do |post, index|
+    def scrape_movie_data
+      @agent.page.search('//div[@class="thumbBlock"]/div[@class="thumbInside"]').map do |post|
         movie_page_url, movie_thumnail_url, description = nil
         duration, movie_quality = nil
-        # limit
-        break if @movies_limit == index
 
         # thumbnail infomation
         post.search('div[@class="thumb"]/a').each do |a|
@@ -63,33 +58,24 @@ module XvideosHelper
           duration = text.match(/\(.+\)/)[0]
           movie_quality = text.sub(/\(.+\)/,'')
         end
-        parsed_data[index] = {"movie_page_url" => movie_page_url, "movie_thumnail_url" => movie_thumnail_url,
-          "description" => description, "movie_url" => movie_url, "duration" => duration, "movie_quality" => movie_quality }
+        {"movie_page_url" => movie_page_url, "movie_thumnail_url" => movie_thumnail_url,
+          "description" => description, "movie_url" => movie_url, "duration" => duration,
+          "movie_quality" => movie_quality }
       end
-      parsed_data
     rescue Exception => e
       raise e
     end
 
-    # tag list crawler
-    def parsed_tag_data
-      parsed_data = initialized_hash
-      @agent.page.search('//div[@id="main"]/ul[@id="tags"]/li').each_with_index do |li, index|
-        # limit
-        break if @tags_limit == index
+    def scrape_tag_data
+      @agent.page.search('//div[@id="main"]/ul[@id="tags"]/li').map do |li|
         # tag info
         tag_name = li.children.children.inner_text
         tag_url = URI.join(ENV::DOMAIN, li.at("a")[:href]).to_s
         tag_count = li.inner_text.sub(/.+\s/,'')
-        parsed_data[index] = {"tag_name" => tag_name, "tag_url" => tag_url, "tag_count" => tag_count}
+        {"tag_name" => tag_name, "tag_url" => tag_url, "tag_count" => tag_count}
       end
-      parsed_data
     rescue Exception => e
       raise e
-    end
-
-    def initialized_hash
-      Hash.new{ |hash, key| hash[key] = {} }
     end
   end
 end
