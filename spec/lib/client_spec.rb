@@ -1,99 +1,144 @@
 require 'spec_helper'
 
 describe "XvideosHelper::Client" do
-  context 'movies_of' do
-    it 'return valid values' do
-      @xh = XvideosHelper::Client.new
-      lists = @xh.movies_of("http://jp.xvideos.com/")
-      lists.count.should > 0
-      lists.each do |key,list|
-        list["movie_url"].should match(/^http:\/\/.+\/\d+$/)
-        list["movie_page_url"].should match(/^http:\/\/.+/)
-        list["movie_thumnail_url"].should match(/^http:\/\/.+/)
-        list["description"].should_not be_nil
-        list["duration"].should_not be_nil
-        list["movie_quality"].should_not be_nil
-      end
-    end
-
-    it 'raises error if invalid url' do
-      @xh = XvideosHelper::Client.new
-      lambda {@xh.movies_of("invalid://jp.xvideos.com/")}.should raise_error
-    end
+  before do
+    @xh = XvideosHelper::Client.new
   end
 
-  context 'tag_data_lists' do
-    it 'return valid values' do
-      @xh = XvideosHelper::Client.new
-      @xh.tag_data_lists.count.should > 0
-      @xh.tag_data_lists.each do |key,list|
-        list['tag_name'].should_not be_nil
-        list['tag_url'].should match(/^http:\/\/.+/)
-        list['tag_count'].should_not be_nil
+  describe '.movies_of' do
+    context "with valid value" do
+      before do
+        VCR.use_cassette("client_movies_of_with_valid_value") do
+          @lists = @xh.movies_of("http://jp.xvideos.com/")
+        end
+      end
+
+      it 'return valid values' do
+        expect(@lists.count).to be > 0
+        @lists.each do |key,list|
+          expect(list["movie_url"]).to match(/^http:\/\/.+\/\d+$/)
+          expect(list["movie_page_url"]).to match(/^http:\/\/.+/)
+          expect(list["movie_thumnail_url"]).to match(/^http:\/\/.+/)
+          expect(list["description"]).to_not be_nil
+          expect(list["duration"]).to_not be_nil
+          expect(list["movie_quality"]).to_not be_nil
+        end
       end
     end
 
-    it 'raises error if invalid url' do
-      @xh = XvideosHelper::Client.new
-      @xh.tag_url = 'aaaaaaaa'
-      lambda {@xh.tag_data_lists}.should raise_error
+    context 'with invalid value' do
+      it 'raises error' do
+        expect{ @xh.movies_of("invalid://jp.xvideos.com/") }.to raise_error
+      end
     end
   end
+    
 
-  context 'movies_limit=' do
-    it 'changes limit to 1' do
-      @xh = XvideosHelper::Client.new
-      @xh.movies_limit = 1
-      lists = @xh.movies_of("http://jp.xvideos.com/")
-      lists.count.should == 1
-      lists.each do |key,list|
-        list["movie_url"].should match(/^http:\/\/.+\/\d+$/)
-        list["movie_page_url"].should match(/^http:\/\/.+/)
-        list["movie_thumnail_url"].should match(/^http:\/\/.+/)
-        list["description"].should_not be_nil
-        list["duration"].should_not be_nil
-        list["movie_quality"].should_not be_nil
+  describe '.tag_data_lists' do
+    context "with valid value" do 
+      before do
+        VCR.use_cassette("client_tag_data_lists_with_valid_value") do
+          @tag_data_lists = @xh.tag_data_lists
+        end
+      end
+
+      it 'return valid values' do
+        expect(@tag_data_lists.count).to be > 0
+        @tag_data_lists.each do |key,list|
+          expect(list['tag_name']).to_not be_nil
+          expect(list['tag_url']).to match(/^http:\/\/.+/)
+          expect(list['tag_count']).to_not be_nil
+        end
       end
     end
 
-    it 'changes limit to 0' do
-      @xh = XvideosHelper::Client.new
-      @xh.movies_limit = 0
-      lists = @xh.movies_of("http://jp.xvideos.com/")
-      lists.count.should == 0
-      lists.each do |key,list|
-        list["movie_url"].should match(/^http:\/\/.+\/\d+$/)
-        list["movie_page_url"].should match(/^http:\/\/.+/)
-        list["movie_thumnail_url"].should match(/^http:\/\/.+/)
-        list["description"].should_not be_nil
-        list["duration"].should_not be_nil
-        list["movie_quality"].should_not be_nil
+    context "with invalid value" do
+      it 'raises error' do
+        @xh.tag_url = 'aaaaaaaa'
+        expect{ @xh.tag_data_lists }.to raise_error
       end
     end
   end
 
-  context 'tags_limit=' do
-    it 'changes limit to 1' do
-      @xh = XvideosHelper::Client.new
-      @xh.tags_limit = 1
-      @xh.tag_data_lists.count.should == 1
-      @xh.tag_data_lists.each do |key,list|
-        list['tag_name'].should_not be_nil
-        list['tag_url'].should match(/^http:\/\/.+/)
-        list['tag_count'].should_not be_nil
+  describe '.movies_limit=' do
+    context "with limit 1" do
+      before do
+        @xh.movies_limit = 1
+        VCR.use_cassette("client_movies_of_with_limit") do
+          @lists = @xh.movies_of("http://jp.xvideos.com/")
+        end
+      end
+
+      it 'changes limit to 1' do
+        expect(@lists.count).to eq 1
+        @lists.each do |key,list|
+          expect(list["movie_url"]).to match(/^http:\/\/.+\/\d+$/)
+          expect(list["movie_page_url"]).to match(/^http:\/\/.+/)
+          expect(list["movie_thumnail_url"]).to match(/^http:\/\/.+/)
+          expect(list["description"]).to_not be_nil
+          expect(list["duration"]).to_not be_nil
+          expect(list["movie_quality"]).to_not be_nil
+        end
       end
     end
 
-    it 'changes limit to 0' do
-      @xh = XvideosHelper::Client.new
-      @xh.tags_limit = 0
-      @xh.tag_data_lists.count.should == 0
-      @xh.tag_data_lists.each do |key,list|
-        list['tag_name'].should_not be_nil
-        list['tag_url'].should match(/^http:\/\/.+/)
-        list['tag_count'].should_not be_nil
+    context "with limit 0" do
+      before do
+        @xh.movies_limit = 0
+        VCR.use_cassette("client_movies_of_with_limit") do
+          @lists = @xh.movies_of("http://jp.xvideos.com/")
+        end
+      end
+      
+      it 'changes limit to 0' do
+        expect(@lists.count).to eq 0
+        @lists.each do |key,list|
+          expect(list["movie_url"]).to match(/^http:\/\/.+\/\d+$/)
+          expect(list["movie_page_url"]).to match(/^http:\/\/.+/)
+          expect(list["movie_thumnail_url"]).to match(/^http:\/\/.+/)
+          expect(list["description"]).to_not be_nil
+          expect(list["duration"]).to_not be_nil
+          expect(list["movie_quality"]).to_not be_nil
+        end
       end
     end
   end
 
+  describe '.tags_limit=' do
+    context "with limit 0" do
+      before do
+        @xh.tags_limit = 0
+        VCR.use_cassette("client_tag_data_lists") do
+          @tag_data_lists = @xh.tag_data_lists
+        end
+      end
+
+      it do
+        expect(@tag_data_lists.count).to eq 0
+        @tag_data_lists.each do |key,list|
+          expect(list['tag_name']).to_not be_nil
+          expect(list['tag_url']).to match(/^http:\/\/.+/)
+          expect(list['tag_count']).to_not be_nil
+        end
+      end
+    end
+
+    context "with limit 1" do
+      before do
+        @xh.tags_limit = 1
+        VCR.use_cassette("client_tag_data_lists") do
+          @tag_data_lists = @xh.tag_data_lists
+        end
+      end
+
+      it do
+        expect(@tag_data_lists.count).to eq 1
+        @tag_data_lists.each do |key,list|
+          expect(list['tag_name']).to_not be_nil
+          expect(list['tag_url']).to match(/^http:\/\/.+/)
+          expect(list['tag_count']).to_not be_nil
+        end
+      end
+    end
+  end
 end

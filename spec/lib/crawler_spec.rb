@@ -1,100 +1,107 @@
 require 'spec_helper'
 
 describe "XvideosHelper::Crawler" do
-  context 'get_data_from' do
-    it 'return valid movie information' do
-      @xh = XvideosHelper::Crawler.new
-      lists = @xh.get_data_from("http://jp.xvideos.com/",'movie')
-      lists.count.should > 0
-      lists.each do |key,list|
-        list["movie_url"].should match(/^http:\/\/.+\/\d+$/)
-        list["movie_page_url"].should match(/^http:\/\/.+/)
-        list["movie_thumnail_url"].should match(/^http:\/\/.+/)
-        list["description"].should_not be_nil
-        list["duration"].should_not be_nil
-        list["movie_quality"].should_not be_nil
+  before do
+    @xh = XvideosHelper::Crawler.new
+  end
+
+  describe '.get_data_from' do
+    context "when movie" do
+      context do
+        before do
+          VCR.use_cassette "crawler_get_data_from_movie" do
+            @lists = @xh.get_data_from("http://jp.xvideos.com/",'movie')
+          end
+        end
+
+        it 'return valid movie information' do
+          expect(@lists.count).to be > 0
+          @lists.each do |key,list|
+            expect(list["movie_url"]).to match(/^http:\/\/.+\/\d+$/)
+            expect(list["movie_page_url"]).to match(/^http:\/\/.+/)
+            expect(list["movie_thumnail_url"]).to match(/^http:\/\/.+/)
+            expect(list["description"]).to_not be_nil
+            expect(list["duration"]).to_not be_nil
+            expect(list["movie_quality"]).to_not be_nil
+          end
+        end
+      end
+
+      context "with limit" do
+        before do
+          @xh.movies_limit = 0
+          VCR.use_cassette "crawler_get_data_from_movie_with_limit" do
+            @lists = @xh.get_data_from("http://jp.xvideos.com/",'movie')
+          end
+        end
+        
+        it 'return 0 movie information' do
+          expect(@lists.count).to eq 0
+          @lists.each do |key,list|
+            expect(list["movie_url"]).to match(/^http:\/\/.+\/\d+$/)
+            expect(list["movie_page_url"]).to match(/^http:\/\/.+/)
+            expect(list["movie_thumnail_url"]).to match(/^http:\/\/.+/)
+            expect(list["description"]).to_not be_nil
+            expect(list["duration"]).to_not be_nil
+            expect(list["movie_quality"]).to_not be_nil
+          end
+        end
       end
     end
 
-    it 'return 0 movie information' do
-      @xh = XvideosHelper::Crawler.new
-      @xh.movies_limit = 0
-      lists = @xh.get_data_from("http://jp.xvideos.com/",'movie')
-      lists.count.should == 0
-      lists.each do |key,list|
-        list["movie_url"].should match(/^http:\/\/.+\/\d+$/)
-        list["movie_page_url"].should match(/^http:\/\/.+/)
-        list["movie_thumnail_url"].should match(/^http:\/\/.+/)
-        list["description"].should_not be_nil
-        list["duration"].should_not be_nil
-        list["movie_quality"].should_not be_nil
+    describe "taglist" do
+      context do
+        before do
+          VCR.use_cassette "crawler_get_data_from_taglist" do
+            @lists = @xh.get_data_from("http://jp.xvideos.com/tags",'taglist')
+          end
+        end
+
+        it 'return valid tag lists' do
+          expect(@lists.count).to be > 0
+          @lists.each do |key,list|
+            expect(list['tag_name']).to_not be_nil
+            expect(list['tag_url']).to match(/^http:\/\/.+/)
+            expect(list['tag_count']).to_not be_nil
+          end
+        end
       end
-    end
 
-    it 'return 1 movie information' do
-      @xh = XvideosHelper::Crawler.new
-      @xh.movies_limit = 1
-      lists = @xh.get_data_from("http://jp.xvideos.com/",'movie')
-      lists.count.should == 1
-      lists.each do |key,list|
-        list["movie_url"].should match(/^http:\/\/.+\/\d+$/)
-        list["movie_page_url"].should match(/^http:\/\/.+/)
-        list["movie_thumnail_url"].should match(/^http:\/\/.+/)
-        list["description"].should_not be_nil
-        list["duration"].should_not be_nil
-        list["movie_quality"].should_not be_nil
+      context "with limit" do
+        it 'return 0 tag list' do
+          @xh.tags_limit = 0
+          VCR.use_cassette "crawler_get_data_from_taglist_with_limit" do
+            @lists = @xh.get_data_from("http://jp.xvideos.com/tags",'taglist')
+          end
+          expect(@lists.count).to eq 0
+          @lists.each do |key,list|
+            expect(list['tag_name']).to_not be_nil
+            expect(list['tag_url']).to match(/^http:\/\/.+/)
+            expect(list['tag_count']).to_not be_nil
+          end
+        end
       end
-    end
-
-    it 'return valid tag lists' do
-      @xh = XvideosHelper::Crawler.new
-      lists = @xh.get_data_from("http://jp.xvideos.com/tags",'taglist')
-      lists.count.should > 0
-      lists.each do |key,list|
-        list['tag_name'].should_not be_nil
-        list['tag_url'].should match(/^http:\/\/.+/)
-        list['tag_count'].should_not be_nil
-      end
-    end
-
-    it 'return 0 tag list' do
-      @xh = XvideosHelper::Crawler.new
-      @xh.tags_limit = 0
-      lists = @xh.get_data_from("http://jp.xvideos.com/tags",'taglist')
-      lists.count.should == 0
-      lists.each do |key,list|
-        list['tag_name'].should_not be_nil
-        list['tag_url'].should match(/^http:\/\/.+/)
-        list['tag_count'].should_not be_nil
-      end
-    end
-
-    it 'return 1 tag list' do
-      @xh = XvideosHelper::Crawler.new
-      @xh.tags_limit = 1
-      lists = @xh.get_data_from("http://jp.xvideos.com/tags",'taglist')
-      lists.count.should == 1
-      lists.each do |key,list|
-        list['tag_name'].should_not be_nil
-        list['tag_url'].should match(/^http:\/\/.+/)
-        list['tag_count'].should_not be_nil
-      end
-    end
-
-    it 'return empty object if undifined name or the other objects' do
-      @xh = XvideosHelper::Crawler.new
-      lists = @xh.get_data_from("http://jp.xvideos.com/",'undifined_name')
-      lists.should == {}
-      lists = @xh.get_data_from("http://jp.xvideos.com/",{})
-      lists.should == {}
-      lists = @xh.get_data_from("http://jp.xvideos.com/",[])
-      lists.should == {}
-    end
-
-    it 'raises error if invalid url' do
-      @xh = XvideosHelper::Crawler.new
-      lambda {@xh.movies_of("invalid://jp.xvideos.com/",'movie')}.should raise_error
     end
   end
 
+  context "with undifined name or the other objects" do
+    it 'return empty object' do
+      VCR.use_cassette "crawler_get_data_from_taglist_with_undefined_name" do
+        @lists = @xh.get_data_from("http://jp.xvideos.com/",'undifined_name')
+      end
+      expect(@lists).to eq({})
+      VCR.use_cassette "crawler_get_data_from_taglist_with_empty_hash" do
+        @lists = @xh.get_data_from("http://jp.xvideos.com/",{})
+      end
+      expect(@lists).to eq({})
+      VCR.use_cassette "crawler_get_data_from_taglist_with_empty_array" do
+        @lists = @xh.get_data_from("http://jp.xvideos.com/",[])
+      end
+      expect(@lists).to eq({})
+    end
+  end
+
+  it 'raises error if invalid url' do
+    expect{ @xh.movies_of("invalid://jp.xvideos.com/",'movie') }.to raise_error
+  end
 end
