@@ -34,26 +34,25 @@ module Xvideos
 
       def scrape
         @agent.page.search('//div[@class="thumbBlock"]/div[@class="thumbInside"]').map do |post|
-          movie_page_url, movie_thumnail_url, description = nil
-          duration, movie_quality = nil
+          page_url, thumbnail_url, description, duration, quality = nil
 
           # thumbnail infomation
           post.search('div[@class="thumb"]/a').each do |a|
-            movie_page_url     = URI.join(ENV::DOMAIN, a[:href]).to_s
-            movie_thumnail_url = a.at("img")[:src]
+            page_url     = URI.join(ENV::DOMAIN, a[:href]).to_s
+            thumnail_url = a.at("img")[:src]
           end
 
           # if script tag is contained
           post.search('script').each do |elm|
             href = elm.children[0].content.match(/href="(.+?)">/)[1]
-            movie_page_url     = URI.join(ENV::DOMAIN, href).to_s
-            movie_thumnail_url = elm.children[0].content.match(/src="(.+?)"/)[1]
+            page_url     = URI.join(ENV::DOMAIN, href).to_s
+            thumnail_url = elm.children[0].content.match(/src="(.+?)"/)[1]
             description        = elm.children[0].content.match(/<p><a href=".+">(.+)<\/a><\/p>/)[1]
           end
 
           # iframe url
-          iframe = movie_page_url.match(/\/video(\d+)\/.*/)[1]
-          movie_url = URI.join(ENV::IFRAME_URL, iframe).to_s
+          iframe = page_url.match(/\/video(\d+)\/.*/)[1]
+          url = URI.join(ENV::IFRAME_URL, iframe).to_s
 
           # description
           post.search('p/a').each do |a|
@@ -64,11 +63,10 @@ module Xvideos
           post.search('p[@class="metadata"]/span[@class="bg"]').each do |span|
             text = span.inner_text.gsub(/(\t|\s|\n)+/,'')
             duration = text.match(/\(.+\)/)[0]
-            movie_quality = text.sub(/\(.+\)/,'')
+            quality = text.sub(/\(.+\)/,'')
           end
-          {"movie_page_url" => movie_page_url, "movie_thumnail_url" => movie_thumnail_url,
-            "description" => description, "movie_url" => movie_url, "duration" => duration,
-            "movie_quality" => movie_quality }
+          { page_url: page_url, thumbnail_url: thumbnail_url,
+            description: description, url: url, duration: duration, movie_quality: quality }
         end
       end
     end
