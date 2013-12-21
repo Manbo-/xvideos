@@ -5,6 +5,12 @@ module XvideosHelper
         scrape_movies[idx]
       end
 
+      def size
+        scrape_movies.size
+      end
+      alias length size
+      alias count size
+
       def each
         scrape_movies.each do |movie|
           yield movie

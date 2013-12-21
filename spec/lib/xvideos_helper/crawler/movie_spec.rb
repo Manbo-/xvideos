@@ -12,6 +12,10 @@ describe XvideosHelper::Crawler::Movie do
       expect(@cralwer.curr_page).to eq 1
     end
 
+    it do
+      expect(@cralwer.size).to_not be_nil
+    end
+
     describe ".next_page" do
       it do
         expect(@cralwer.next_page).to match URI.regexp
