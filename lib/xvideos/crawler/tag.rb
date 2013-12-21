@@ -1,11 +1,10 @@
 module Xvideos
   class Crawler
     class Tag < Crawler
-      
       private
 
-      def scrape_tags
-        @doc.search('//div[@id="main"]/ul[@id="tags"]/li').map do |li|
+      def scrape
+        @agent.page.search('//div[@id="main"]/ul[@id="tags"]/li').map do |li|
           # tag info
           tag_name = li.children.children.inner_text
           tag_url = URI.join(ENV::DOMAIN, li.at("a")[:href]).to_s

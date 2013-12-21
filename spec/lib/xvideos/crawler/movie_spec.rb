@@ -2,97 +2,97 @@ require "spec_helper"
 
 describe Xvideos::Crawler::Movie do
   context "when page 1" do
-    before do
-      VCR.use_cassette "page-1home-1" do
-        @cralwer = Xvideos::Crawler::Movie.new(Xvideos::ENV::DOMAIN)
+    let(:crawler) do
+      VCR.use_cassette "page-1-home-1" do
+        Xvideos::Crawler::Movie.new(Xvideos::ENV::DOMAIN)
       end
     end
 
-    it do
-      expect(@cralwer.curr_page).to eq 1
+    it_should_behave_like "an array" do
+      let(:array){ crawler }
     end
-
+    
     it do
-      expect(@cralwer.size).to_not be_nil
+      expect(crawler.curr_page).to eq 1
     end
 
     describe "#next_page" do
       it do
-        expect(@cralwer.next_page).to match URI.regexp
+        expect(crawler.next_page).to match URI.regexp
       end
 
       it do
-        expect(@cralwer.next_page?).to be_true
+        expect(crawler.next_page?).to be_true
       end
 
       it do
         expect{
           VCR.use_cassette "page-1-home-2" do
-            @cralwer.next_page!
+            crawler.next_page!
           end
-        }.to change{ @cralwer.curr_page }.from(1).to(2)
+        }.to change{ crawler.curr_page }.from(1).to(2)
       end
     end
 
     describe "#prev_page" do
       it do
-        expect(@cralwer.prev_page).to be_nil
+        expect(crawler.prev_page).to be_nil
       end
 
       it do
-        expect(@cralwer.prev_page?).to be_false
+        expect(crawler.prev_page?).to be_false
       end
 
       it do
-        expect{ @cralwer.prev_page! }.to raise_error
+        expect{ crawler.prev_page! }.to raise_error
       end
     end
   end
 
   context "when page 2" do
-    before do
+    let(:crawler) do
       VCR.use_cassette "page-2-home-2" do
-        @cralwer = Xvideos::Crawler::Movie.new(URI.join(Xvideos::ENV::DOMAIN, "/home/1"))
+        Xvideos::Crawler::Movie.new(URI.join(Xvideos::ENV::DOMAIN, "/home/1"))
       end
     end
 
     it do
-      expect(@cralwer.curr_page).to eq 2
+      expect(crawler.curr_page).to eq 2
     end
 
     describe "#next_page" do
       it do
-        expect(@cralwer.next_page).to match URI.regexp
+        expect(crawler.next_page).to match URI.regexp
       end
 
       it do
-        expect(@cralwer.next_page?).to be_true
+        expect(crawler.next_page?).to be_true
       end
 
       it do
         expect{
           VCR.use_cassette "page-2-home-3" do
-            @cralwer.next_page!
+            crawler.next_page!
           end
-        }.to change{ @cralwer.curr_page }.from(2).to(3)
+        }.to change{ crawler.curr_page }.from(2).to(3)
       end
     end
 
     describe "#prev_page" do
       it do
-        expect(@cralwer.prev_page).to match URI.regexp
+        expect(crawler.prev_page).to match URI.regexp
       end
 
       it do
-        expect(@cralwer.prev_page?).to be_true
+        expect(crawler.prev_page?).to be_true
       end
 
       it do
         expect{
           VCR.use_cassette "page-2-home-1" do
-            @cralwer.prev_page!
+            crawler.prev_page!
           end
-        }.to change{ @cralwer.curr_page }.from(2).to(1)
+        }.to change{ crawler.curr_page }.from(2).to(1)
       end
     end
   end
