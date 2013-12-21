@@ -5,7 +5,7 @@ require 'xvideos'
 
 class App < Thor
   desc "movies [url]", "show movies url"
-  def movies(link = Xvideos::ENV::DOMAIN)
+  def movies(link = Xvideos::ENV::TOP_PAGE)
     crawler = Xvideos::Crawler.movies(link)
     crawler.map{ |movie| movie[:url] }.each do |url|
       puts url
