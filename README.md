@@ -17,13 +17,16 @@ Xvideos is a gem to support for adult site creater.This gem provides xvideo's da
     crawler.each do |movie|
       ...
     end
-    
+
     crawler = Xvideos::Crawler.tags # => Xvideos::Crawler::Tag
     crawler.each do |tag|
       tag[:name]
       tag[:url]
       tag[:count]
     end
+
+## Command
+    $ xvideos movies [url]
 
 ## Contributing
 
