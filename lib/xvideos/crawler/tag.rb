@@ -6,10 +6,10 @@ module Xvideos
       def scrape
         @agent.page.search('//div[@id="main"]/ul[@id="tags"]/li').map do |li|
           # tag info
-          tag_name = li.children.children.inner_text
-          tag_url = URI.join(ENV::DOMAIN, li.at("a")[:href]).to_s
-          tag_count = li.inner_text.sub(/.+\s/,'')
-          {"tag_name" => tag_name, "tag_url" => tag_url, "tag_count" => tag_count}
+          name = li.children.children.inner_text
+          url = URI.join(ENV::DOMAIN, li.at("a")[:href]).to_s
+          count = li.inner_text.sub(/.+\s/,'')
+          { name: name, url: url, count: count }
         end
       end
     end
