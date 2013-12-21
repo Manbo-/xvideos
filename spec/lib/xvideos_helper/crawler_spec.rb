@@ -1,15 +1,11 @@
 require 'spec_helper'
 
 describe XvideosHelper::Crawler do
-  before do
-    @crawler = XvideosHelper::Crawler.new
-  end
-
   describe ".movies" do
     it do
       expect(XvideosHelper::Crawler::Movie).to receive(:new)
       VCR.use_cassette ".movies" do
-        @crawler.movies
+        XvideoHelper::Crawler.movies
       end
     end
   end
@@ -18,7 +14,7 @@ describe XvideosHelper::Crawler do
     it do
       expect(XvideosHelper::Crawler::Tag).to receive(:new)
       VCR.use_cassette ".tags" do
-        @crawler.tags
+        XvideoHelper::Crawler.tags
       end
     end
   end
