@@ -3,7 +3,7 @@ require "spec_helper"
 describe Xvideos::Crawler::Tag do
   let(:crawler) do
     VCR.use_cassette "tag" do
-      Xvideos::Crawler::Tag.new(Xvideos::ENV::TAG_URL)
+      Xvideos::Crawler::Tag.new(Xvideos::Crawler::TAG_URL)
     end
   end
 

@@ -4,7 +4,7 @@ describe Xvideos::Crawler::Movie do
   context "when page 1" do
     let(:crawler) do
       VCR.use_cassette "page-1-home-1" do
-        Xvideos::Crawler::Movie.new(Xvideos::ENV::DOMAIN)
+        Xvideos::Crawler::Movie.new(Xvideos::Crawler::TOP_PAGE)
       end
     end
 
@@ -52,7 +52,7 @@ describe Xvideos::Crawler::Movie do
   context "when page 2" do
     let(:crawler) do
       VCR.use_cassette "page-2-home-2" do
-        Xvideos::Crawler::Movie.new(URI.join(Xvideos::ENV::DOMAIN, "/home/1"))
+        Xvideos::Crawler::Movie.new(URI.join(Xvideos::Crawler::TOP_PAGE, "/home/1"))
       end
     end
 

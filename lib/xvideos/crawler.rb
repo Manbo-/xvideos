@@ -3,6 +3,10 @@ require "xvideos/crawler/tag"
 
 module Xvideos
   class Crawler
+    TOP_PAGE   = 'http://jp.xvideos.com'
+    TAG_URL    = "#{TOP_PAGE}/tags"
+    IFRAME_URL = 'http://flashservice.xvideos.com/embedframe/'
+
     def initialize(http = nil, &block)
       @agent = Mechanize.new
       @agent.get(http) if http
@@ -27,13 +31,13 @@ module Xvideos
     include Enumerable
 
     class << self
-      def movies(http = ENV::DOMAIN)
+      def movies(http = TOP_PAGE)
         @movies = Crawler::Movie.new(http)
       end
       alias videos movies
       
       def tags
-        @tags = Crawler::Tag.new(ENV::TAG_URL)
+        @tags = Crawler::Tag.new(TAG_URL)
       end
     end
   end

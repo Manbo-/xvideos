@@ -9,7 +9,7 @@ module Xvideos
       %i(next_page prev_page).each do |method_name|
         define_method method_name do
           if a = scrape_pages[method_name]
-            URI.join(ENV::DOMAIN, a[:href]).to_s
+            URI.join(TOP_PAGE, a[:href]).to_s
           end
         end
 
@@ -38,21 +38,21 @@ module Xvideos
 
           # thumbnail infomation
           post.search('div[@class="thumb"]/a').each do |a|
-            page_url     = URI.join(ENV::DOMAIN, a[:href]).to_s
+            page_url     = URI.join(TOP_PAGE, a[:href]).to_s
             thumnail_url = a.at("img")[:src]
           end
 
           # if script tag is contained
           post.search('script').each do |elm|
             href = elm.children[0].content.match(/href="(.+?)">/)[1]
-            page_url     = URI.join(ENV::DOMAIN, href).to_s
+            page_url     = URI.join(TOP_PAGE, href).to_s
             thumnail_url = elm.children[0].content.match(/src="(.+?)"/)[1]
             description        = elm.children[0].content.match(/<p><a href=".+">(.+)<\/a><\/p>/)[1]
           end
 
           # iframe url
           iframe = page_url.match(/\/video(\d+)\/.*/)[1]
-          url = URI.join(ENV::IFRAME_URL, iframe).to_s
+          url = URI.join(IFRAME_URL, iframe).to_s
 
           # description
           post.search('p/a').each do |a|
