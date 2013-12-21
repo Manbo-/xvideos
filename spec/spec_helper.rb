@@ -1,6 +1,7 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'xvideos_helper'
 
+require "pry"
 require "webmock"
 require "vcr"
 
