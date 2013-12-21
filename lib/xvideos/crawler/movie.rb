@@ -1,24 +1,6 @@
 module Xvideos
   class Crawler
     class Movie < Crawler
-      def [](idx)
-        scrape_movies[idx]
-      end
-
-      def size
-        scrape_movies.size
-      end
-      alias length size
-      alias count size
-
-      def each
-        scrape_movies.each do |movie|
-          yield movie
-        end
-      end
-
-      include Enumerable
-
       def curr_page
         scrape_pages[:curr_page]
       end
@@ -50,7 +32,7 @@ module Xvideos
         { curr_page: c, next_page: n, prev_page: p }
       end
 
-      def scrape_movies
+      def scrape
         @agent.page.search('//div[@class="thumbBlock"]/div[@class="thumbInside"]').map do |post|
           movie_page_url, movie_thumnail_url, description = nil
           duration, movie_quality = nil
