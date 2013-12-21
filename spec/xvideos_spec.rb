@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe XvideosHelper do
+describe Xvideos do
   it 'should have a version number' do
-    XvideosHelper::VERSION.should_not be_nil
+    Xvideos::VERSION.should_not be_nil
   end
 end

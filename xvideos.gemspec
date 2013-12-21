@@ -1,14 +1,14 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'xvideos_helper/version'
+require 'xvideos/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "xvideos_helper"
-  spec.version       = XvideosHelper::VERSION
+  spec.name          = "xvideos"
+  spec.version       = Xvideos::VERSION
   spec.authors       = ["YuheiNakasaka"]
   spec.email         = ["yuhei.nakasaka@gmail.com"]
-  spec.description   = %q{xvideos_helper is a gem to support for adult site creater.}
+  spec.description   = %q{xvideos is a gem to support for adult site creater.}
   spec.summary       = %q{This gem get movie infomation from xvideo.com.}
   spec.homepage      = "https://github.com/YuheiNakasaka/xvideos_helper"
   spec.license       = "MIT"

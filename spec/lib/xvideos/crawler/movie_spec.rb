@@ -1,10 +1,10 @@
 require "spec_helper"
 
-describe XvideosHelper::Crawler::Movie do
+describe Xvideos::Crawler::Movie do
   context "when page 1" do
     before do
       VCR.use_cassette "page-1home-1" do
-        @cralwer = XvideosHelper::Crawler::Movie.new(XvideosHelper::ENV::DOMAIN)
+        @cralwer = Xvideos::Crawler::Movie.new(Xvideos::ENV::DOMAIN)
       end
     end
 
@@ -52,7 +52,7 @@ describe XvideosHelper::Crawler::Movie do
   context "when page 2" do
     before do
       VCR.use_cassette "page-2-home-2" do
-        @cralwer = XvideosHelper::Crawler::Movie.new(URI.join(XvideosHelper::ENV::DOMAIN, "/home/1"))
+        @cralwer = Xvideos::Crawler::Movie.new(URI.join(Xvideos::ENV::DOMAIN, "/home/1"))
       end
     end
 

@@ -1,4 +1,4 @@
-module XvideosHelper
+module Xvideos
   class Crawler
     class Movie < Crawler
       def [](idx)

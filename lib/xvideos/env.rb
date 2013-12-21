@@ -1,5 +1,5 @@
 # coding: utf-8
-module XvideosHelper
+module Xvideos
   module ENV
     DOMAIN = 'http://jp.xvideos.com'
     TAG_URL = "#{DOMAIN}/tags"

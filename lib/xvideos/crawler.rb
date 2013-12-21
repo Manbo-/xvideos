@@ -1,7 +1,7 @@
-require "xvideos_helper/crawler/movie"
-require "xvideos_helper/crawler/tag"
+require "xvideos/crawler/movie"
+require "xvideos/crawler/tag"
 
-module XvideosHelper
+module Xvideos
   class Crawler
     def initialize(http = nil, &block)
       @agent = Mechanize.new
