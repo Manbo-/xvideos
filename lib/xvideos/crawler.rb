@@ -9,8 +9,8 @@ module Xvideos
 
     def initialize(http = nil, &block)
       @agent = Mechanize.new
-      @agent.get(http) if http
       @agent.instance_eval(&block) if block_given?
+      @agent.get(http) if http
     end
 
     def [](idx)
@@ -31,13 +31,13 @@ module Xvideos
     include Enumerable
 
     class << self
-      def movies(http = TOP_PAGE)
-        @movies = Crawler::Movie.new(http)
+      def movies(http = TOP_PAGE, &block)
+        @movies = Crawler::Movie.new(http, &block)
       end
       alias videos movies
       
-      def tags
-        @tags = Crawler::Tag.new(TAG_URL)
+      def tags(&block)
+        @tags = Crawler::Tag.new(TAG_URL, &block)
       end
     end
   end
