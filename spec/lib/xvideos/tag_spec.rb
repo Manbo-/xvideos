@@ -3,7 +3,7 @@ require "spec_helper"
 describe Xvideos::Tag do
   context "when initialize valid params" do
     let(:params) do
-      { name: "a", url: "a", count: "a" }
+      { name: "a", url: "http://www.xvideos.com/tags/18", count: "a" }
     end
 
     it do
@@ -15,6 +15,13 @@ describe Xvideos::Tag do
         @movies = Xvideos::Tag.new(params).movies
       end
       expect(@movies).to be_a_kind_of Xvideos::Crawler::Movie
+    end
+
+    it do
+      expect_any_instance_of(Mechanize).to receive(:get).with(params[:url])
+      VCR.use_cassette "tag-movies" do
+        @movies = Xvideos::Tag.new(params).movies
+      end
     end
   end
 

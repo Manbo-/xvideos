@@ -5,7 +5,7 @@ module Xvideos
     end
     
     def movies(&block)
-      Xvideos::Crawler.movies(@url, &block)
+      Xvideos::Crawler.movies(url, &block)
     end
   end
 end
