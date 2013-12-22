@@ -1,7 +1,7 @@
 module Xvideos
   class Crawler
     class Tag < Crawler
-      alias tags to_a
+      def tags to_a; end
 
       private
 
