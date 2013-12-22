@@ -38,21 +38,21 @@ module Xvideos
 
           # thumbnail infomation
           post.search('div[@class="thumb"]/a').each do |a|
-            page_url     = URI.join(TOP_PAGE, a[:href]).to_s
-            thumnail_url = a.at("img")[:src]
+            page_url      = URI.join(TOP_PAGE, a[:href]).to_s
+            thumbnail_url = a.at("img")[:src]
           end
 
           # if script tag is contained
           post.search('script').each do |elm|
-            href = elm.children[0].content.match(/href="(.+?)">/)[1]
-            page_url     = URI.join(TOP_PAGE, href).to_s
-            thumnail_url = elm.children[0].content.match(/src="(.+?)"/)[1]
-            description        = elm.children[0].content.match(/<p><a href=".+">(.+)<\/a><\/p>/)[1]
+            href          = elm.children[0].content.match(/href="(.+?)">/)[1]
+            page_url      = URI.join(TOP_PAGE, href).to_s
+            thumbnail_url = elm.children[0].content.match(/src="(.+?)"/)[1]
+            description   = elm.children[0].content.match(/<p><a href=".+">(.+)<\/a><\/p>/)[1]
           end
 
           # iframe url
           iframe = page_url.match(/\/video(\d+)\/.*/)[1]
-          url = URI.join(IFRAME_URL, iframe).to_s
+          url    = URI.join(IFRAME_URL, iframe).to_s
 
           # description
           post.search('p/a').each do |a|
@@ -61,12 +61,12 @@ module Xvideos
 
           # metadata
           post.search('p[@class="metadata"]/span[@class="bg"]').each do |span|
-            text = span.inner_text.gsub(/(\t|\s|\n)+/,'')
+            text     = span.inner_text.gsub(/(\t|\s|\n)+/,'')
             duration = text.match(/\(.+\)/)[0]
-            quality = text.sub(/\(.+\)/,'')
+            quality  = text.sub(/\(.+\)/,'')
           end
-          { page_url: page_url, thumbnail_url: thumbnail_url,
-            description: description, url: url, duration: duration, movie_quality: quality }
+          Xvideos::Movie.new(page_url: page_url, thumbnail_url: thumbnail_url,
+                             description: description, url: url, duration: duration, quality: quality)
         end
       end
     end

@@ -9,7 +9,7 @@ module Xvideos
           name = li.children.children.inner_text
           url = URI.join(TOP_PAGE, li.at("a")[:href]).to_s
           count = li.inner_text.sub(/.+\s/,'')
-          { name: name, url: url, count: count }
+          Xvideos::Tag.new(name: name, url: url, count: count)
         end
       end
     end

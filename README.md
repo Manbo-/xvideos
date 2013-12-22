@@ -7,12 +7,12 @@ Xvideos is a gem to support for adult site creater.This gem provides xvideo's da
 ### movies
     crawler = Xvideos::Crawler.movies # => Xvideos::Crawler::Movie
     crawler.each do |movie|
-      movie[:url]
-      movie[:page_url]
-      movie[:thumbnail_url]
-      movie[:description]
-      movie[:duration]
-      movie[:quality]
+      movie.url
+      movie.page_url
+      movie.thumbnail_url
+      movie.description
+      movie.duration
+      movie.quality
     end
     crawler.next_page! if crawler.next_page?
     crawler.each do |movie|
@@ -22,9 +22,10 @@ Xvideos is a gem to support for adult site creater.This gem provides xvideo's da
 ### tags
     crawler = Xvideos::Crawler.tags # => Xvideos::Crawler::Tag
     crawler.each do |tag|
-      tag[:name]
-      tag[:url]
-      tag[:count]
+      tag.name
+      tag.url
+      tag.count
+      tag.movies # => Xvideos::Crawler::Movie
     end
 
 ### initialize with block
