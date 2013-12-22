@@ -28,4 +28,20 @@ describe Xvideos::Crawler do
       end
     end
   end
+
+  describe ".search" do
+    it do
+      expect(Xvideos::Crawler::Movie).to receive(:new)
+      VCR.use_cassette "search" do
+        Xvideos::Crawler.search("porn")
+      end
+    end
+
+    it do
+      VCR.use_cassette "search-page-2" do
+        @crawler = Xvideos::Crawler.search("porn", page: 2)
+      end
+      expect(@crawler.curr_page).to eq 2
+    end
+  end
 end

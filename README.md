@@ -28,7 +28,10 @@
       tag.movies # => Xvideos::Crawler::Movie
     end
 
-### initialize with block
+### search
+    crawler = Xvideos::Crawler.search(keyword, page: 3) # => Xvideos::Crawler::Movie
+
+### call with block
     crawler = Xvideos::Crawler.movies do |agent|
        agent # => Mechanize
        agent.user_agent_alais = "Windows IE 9"

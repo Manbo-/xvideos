@@ -25,7 +25,8 @@ module Xvideos
       private
 
       def scrape_pages
-        pages = @agent.page.search("//div[@class='pagination']/ul/li/a")
+        xpath = "//div[contains(concat(' ' ,@class, ' '), ' pagination ')]/ul/li/a"
+        pages = @agent.page.search(xpath)
         c = pages.find{ |a| a[:class] == "sel" }.inner_text.to_i
         n = pages[c]
         p = c - 2 >= 0  ? pages[c - 2] : nil

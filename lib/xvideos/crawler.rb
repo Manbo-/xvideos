@@ -32,13 +32,23 @@ module Xvideos
 
     class << self
       def movies(http = TOP_PAGE, &block)
-        @movies = Crawler::Movie.new(http, &block)
+        Crawler::Movie.new(http, &block)
       end
       alias videos movies
       
       def tags(&block)
-        @tags = Crawler::Tag.new(TAG_URL, &block)
+        Crawler::Tag.new(TAG_URL, &block)
       end
+
+      def search(keyword, opts = {}, &block)
+        if page = opts.delete(:page)
+          http = "#{TOP_PAGE}/?k=#{URI.encode(keyword)}&p=#{page - 1}"
+        else
+          http = "#{TOP_PAGE}/?k=#{URI.encode(keyword)}"
+        end
+        Crawler::Movie.new(http, &block)
+      end
+      alias find search
     end
   end
 end
