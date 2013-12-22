@@ -1,6 +1,8 @@
 module Xvideos
   class Crawler
     class Movie < Crawler
+      alias movies to_a
+
       def curr_page
         scrape_pages[:curr_page]
       end

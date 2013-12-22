@@ -23,6 +23,10 @@ module Xvideos
     alias length size
     alias count size
     
+    def to_a
+      scrape
+    end
+
     def each
       scrape.each do |hash|
         yield hash
