@@ -1,6 +1,6 @@
 # Xvideos
 
-Xvideos is a gem to support for adult site creater.This gem provides xvideo's data like movie url or movie page url for you with scraping the site easily.
+[![Build Status](https://travis-ci.org/Manbo-/xvideos.png)](https://travis-ci.org/Manbo-/xvideos)
 
 ## Example
 
