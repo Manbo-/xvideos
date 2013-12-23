@@ -34,7 +34,7 @@
 ### call with block
     crawler = Xvideos::Crawler.movies do |agent|
        agent # => Mechanize
-       agent.user_agent_alais = "Windows IE 9"
+       agent.user_agent_alias = "Windows IE 9"
     end
 
 ## Contributing
