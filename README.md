@@ -2,11 +2,18 @@
 
 [![Build Status](https://travis-ci.org/Manbo-/xvideos.png)](https://travis-ci.org/Manbo-/xvideos)
 
-## Example
+## Install
+    $ git clone https://github.com/Manbo-/xvideos.git
+    $ cd ./xvideos
+    $ rake install
+
+## Usage
 
 ### movies
     crawler = Xvideos::Crawler.movies # => Xvideos::Crawler::Movie
+    crawler.movies # => Array
     crawler.each do |movie|
+      movie # => Xvideos::Movie
       movie.url
       movie.page_url
       movie.thumbnail_url
@@ -21,7 +28,9 @@
 
 ### tags
     crawler = Xvideos::Crawler.tags # => Xvideos::Crawler::Tag
+    crawler.tags # => Array
     crawler.each do |tag|
+      tag # => Xvideos::Tag
       tag.name
       tag.url
       tag.count
