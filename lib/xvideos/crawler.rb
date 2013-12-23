@@ -1,6 +1,3 @@
-require "xvideos/crawler/movie"
-require "xvideos/crawler/tag"
-
 module Xvideos
   class Crawler
     TOP_PAGE   = 'http://jp.xvideos.com'
@@ -45,12 +42,10 @@ module Xvideos
       end
 
       def search(keyword, opts = {}, &block)
-        if page = opts.delete(:page)
-          http = "#{TOP_PAGE}/?k=#{URI.encode(keyword)}&p=#{page - 1}"
-        else
-          http = "#{TOP_PAGE}/?k=#{URI.encode(keyword)}"
-        end
-        Crawler::Movie.new(http, &block)
+        page = opts.delete(:page)
+        opts.merge!(p: page ? page - 1 : nil, k: keyword)
+        query = URI.encode_www_form(opts)
+        Crawler::Movie.new("#{TOP_PAGE}/?#{query}", &block)
       end
       alias find search
     end
