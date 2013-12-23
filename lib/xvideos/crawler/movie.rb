@@ -1,6 +1,10 @@
+require "xvideos/crawler/crawlable"
+
 module Xvideos
-  class Crawler
-    class Movie < Crawler
+  module Crawler
+    class Movie
+      include Crawlable
+
       alias movies to_a
 
       def curr_page

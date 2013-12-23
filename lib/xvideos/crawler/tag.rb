@@ -1,6 +1,10 @@
+require "xvideos/crawler/crawlable"
+
 module Xvideos
-  class Crawler
-    class Tag < Crawler
+  module Crawler
+    class Tag
+      include Crawlable
+
       alias tags to_a
 
       private
