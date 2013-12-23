@@ -37,9 +37,6 @@
        agent.user_agent_alais = "Windows IE 9"
     end
 
-## Command
-    $ xvideos movies [url]
-
 ## Contributing
 
 1. Fork it
