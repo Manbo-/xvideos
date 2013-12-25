@@ -7,7 +7,11 @@ describe Xvideos::Crawler::Tag do
     end
   end
 
-  it_should_behave_like "an array" do
-    let(:array){ crawler }
+  it do
+    expect(crawler.tags).to be_a_kind_of Array
+  end
+
+  it do
+    expect(crawler.tags).to be_all{ |tag| tag.is_a? Xvideos::Tag }
   end
 end

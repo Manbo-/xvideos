@@ -12,7 +12,7 @@
 ### movies
     crawler = Xvideos::Crawler.movies # => Xvideos::Crawler::Movie
     crawler.movies # => Array
-    crawler.each do |movie|
+    crawler.movies.each do |movie|
       movie # => Xvideos::Movie
       movie.url
       movie.page_url
@@ -22,14 +22,14 @@
       movie.quality
     end
     crawler.next_page! if crawler.next_page?
-    crawler.each do |movie|
+    crawler.movies.each do |movie|
       ...
     end
 
 ### tags
     crawler = Xvideos::Crawler.tags # => Xvideos::Crawler::Tag
     crawler.tags # => Array
-    crawler.each do |tag|
+    crawler.tags.each do |tag|
       tag # => Xvideos::Tag
       tag.name
       tag.url

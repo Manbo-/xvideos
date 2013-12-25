@@ -8,12 +8,18 @@ describe Xvideos::Crawler::Movie do
       end
     end
 
-    it_should_behave_like "an array" do
-      let(:array){ crawler }
-    end
-    
     it do
       expect(crawler.curr_page).to eq 1
+    end
+
+    describe "#movies" do
+      it do
+        expect(crawler.movies).to be_a_kind_of Array
+      end
+
+      it do
+        expect(crawler.movies).to be_all{ |tag| tag.is_a? Xvideos::Movie }
+      end
     end
 
     describe "#next_page" do

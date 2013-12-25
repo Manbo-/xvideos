@@ -6,25 +6,8 @@ module Xvideos::Crawler
       @agent.get(http) if http
     end
 
-    def [](idx)
-      scrape[idx]
-    end
-    
-    def size
-      scrape.size
-    end
-    alias length size
-    alias count size
-    
     def to_a
       scrape
     end
-
-    def each
-      scrape.each do |hash|
-        yield hash
-      end
-    end
-    include Enumerable
   end
 end
